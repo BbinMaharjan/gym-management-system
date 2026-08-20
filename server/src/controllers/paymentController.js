@@ -57,6 +57,8 @@ exports.createPayment = async (req, res, next) => {
   try {
     const payment = await Payment.create({
       ...req.body,
+      member: req.params.id,
+      plan: req.body.planId || req.body.plan,
       recordedBy: req.user._id,
     });
     await updateMemberPlan(payment.member, payment.plan, payment.paidOn);
@@ -69,7 +71,12 @@ exports.createPayment = async (req, res, next) => {
 exports.updatePayment = async (req, res, next) => {
   try {
     const oldPayment = await Payment.findById(req.params.id);
-    const payment = await Payment.findByIdAndUpdate(req.params.id, req.body, {
+    const updateData = { ...req.body };
+    if (updateData.planId) {
+      updateData.plan = updateData.planId;
+      delete updateData.planId;
+    }
+    const payment = await Payment.findByIdAndUpdate(req.params.id, updateData, {
       new: true,
       runValidators: true,
     })

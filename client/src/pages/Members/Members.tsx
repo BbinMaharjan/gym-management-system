@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Table,
   Card,
@@ -21,7 +21,7 @@ import {
   Tooltip,
   Badge,
   Empty,
-} from 'antd';
+} from "antd";
 import {
   PlusOutlined,
   EditOutlined,
@@ -38,36 +38,36 @@ import {
   HomeOutlined,
   ManOutlined,
   WomanOutlined,
-} from '@ant-design/icons';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import dayjs, { Dayjs } from 'dayjs';
-import { membersAPI, plansAPI } from '../../api/api';
-import { usePermission } from '../../hooks/useAuth';
-import { Member, MembershipPlan } from '../../types';
+} from "@ant-design/icons";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import dayjs, { Dayjs } from "dayjs";
+import { membersAPI, plansAPI } from "../../api/api";
+import { usePermission } from "../../hooks/useAuth";
+import { Member, MembershipPlan } from "../../types";
 
 const { Option } = Select;
 const { TabPane } = Tabs;
 
 const Members: React.FC = () => {
-  const [search, setSearch] = useState<string>('');
+  const [search, setSearch] = useState<string>("");
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [isViewModalVisible, setIsViewModalVisible] = useState<boolean>(false);
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
   const [editingMember, setEditingMember] = useState<Member | null>(null);
-  const [viewMode, setViewMode] = useState<'table' | 'card'>('card');
+  const [viewMode, setViewMode] = useState<"table" | "card">("card");
   const [form] = Form.useForm();
   const [photoFile, setPhotoFile] = useState<File | null>(null);
-  const [photoPreview, setPhotoPreview] = useState<string>('');
+  const [photoPreview, setPhotoPreview] = useState<string>("");
   const queryClient = useQueryClient();
-  const canEdit = usePermission('members:edit');
-  const canDelete = usePermission('members:delete');
-  const canCreate = usePermission('members:create');
+  const canEdit = usePermission("members:edit");
+  const canDelete = usePermission("members:delete");
+  const canCreate = usePermission("members:create");
 
-  const watchPlan = Form.useWatch('membershipPlan', form);
-  const watchStartDate = Form.useWatch('planStartDate', form);
+  const watchPlan = Form.useWatch("membershipPlan", form);
+  const watchStartDate = Form.useWatch("planStartDate", form);
 
   const { data: membersData, isLoading: membersLoading } = useQuery({
-    queryKey: ['members', { search }],
+    queryKey: ["members", { search }],
     queryFn: async () => {
       const params: Record<string, unknown> = {};
       if (search) {
@@ -79,7 +79,7 @@ const Members: React.FC = () => {
   });
 
   const { data: plansData, isLoading: plansLoading } = useQuery({
-    queryKey: ['plans'],
+    queryKey: ["plans"],
     queryFn: async () => {
       const response = await plansAPI.getAll();
       return response.data;
@@ -87,7 +87,7 @@ const Members: React.FC = () => {
   });
 
   const { data: nextNumberData, refetch: refetchNextNumber } = useQuery({
-    queryKey: ['nextMemberNumber'],
+    queryKey: ["nextMemberNumber"],
     queryFn: async () => {
       const response = await membersAPI.getNextNumber();
       return response.data;
@@ -102,7 +102,9 @@ const Members: React.FC = () => {
 
   useEffect(() => {
     if (isModalVisible && nextNumberData && !editingMember) {
-      form.setFieldsValue({ membershipNumber: nextNumberData.membershipNumber });
+      form.setFieldsValue({
+        membershipNumber: nextNumberData.membershipNumber,
+      });
     }
   }, [nextNumberData, isModalVisible, editingMember, form]);
 
@@ -110,7 +112,7 @@ const Members: React.FC = () => {
     if (watchPlan && watchStartDate && plansData) {
       const plan = plansData.find((p: MembershipPlan) => p._id === watchPlan);
       if (plan) {
-        const expiry = dayjs(watchStartDate).add(plan.durationInDays, 'day');
+        const expiry = dayjs(watchStartDate).add(plan.durationInDays, "day");
         form.setFieldsValue({ planExpiryDate: expiry });
       }
     }
@@ -122,15 +124,15 @@ const Members: React.FC = () => {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['members'] });
-      message.success('Member created successfully');
+      queryClient.invalidateQueries({ queryKey: ["members"] });
+      message.success("Member created successfully");
       setIsModalVisible(false);
       form.resetFields();
       setPhotoFile(null);
-      setPhotoPreview('');
+      setPhotoPreview("");
     },
     onError: (error: Error) => {
-      message.error(error.message || 'Failed to create member');
+      message.error(error.message || "Failed to create member");
     },
   });
 
@@ -140,16 +142,16 @@ const Members: React.FC = () => {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['members'] });
-      message.success('Member updated successfully');
+      queryClient.invalidateQueries({ queryKey: ["members"] });
+      message.success("Member updated successfully");
       setIsModalVisible(false);
       setEditingMember(null);
       form.resetFields();
       setPhotoFile(null);
-      setPhotoPreview('');
+      setPhotoPreview("");
     },
     onError: (error: Error) => {
-      message.error(error.message || 'Failed to update member');
+      message.error(error.message || "Failed to update member");
     },
   });
 
@@ -158,11 +160,11 @@ const Members: React.FC = () => {
       await membersAPI.delete(id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['members'] });
-      message.success('Member deleted successfully');
+      queryClient.invalidateQueries({ queryKey: ["members"] });
+      message.success("Member deleted successfully");
     },
     onError: (error: Error) => {
-      message.error(error.message || 'Failed to delete member');
+      message.error(error.message || "Failed to delete member");
     },
   });
 
@@ -171,11 +173,11 @@ const Members: React.FC = () => {
       await membersAPI.assignPlan(id, { planId });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['members'] });
-      message.success('Plan assigned successfully');
+      queryClient.invalidateQueries({ queryKey: ["members"] });
+      message.success("Plan assigned successfully");
     },
     onError: (error: Error) => {
-      message.error(error.message || 'Failed to assign plan');
+      message.error(error.message || "Failed to assign plan");
     },
   });
 
@@ -183,7 +185,7 @@ const Members: React.FC = () => {
     setEditingMember(null);
     form.resetFields();
     setPhotoFile(null);
-    setPhotoPreview('');
+    setPhotoPreview("");
     setIsModalVisible(true);
   };
 
@@ -199,11 +201,14 @@ const Members: React.FC = () => {
       gender: member.gender,
       bloodGroup: member.bloodGroup,
       shift: member.shift,
-      membershipPlan: member.membershipPlan && typeof member.membershipPlan === 'object'
-        ? member.membershipPlan._id
-        : member.membershipPlan,
+      membershipPlan:
+        member.membershipPlan && typeof member.membershipPlan === "object"
+          ? member.membershipPlan._id
+          : member.membershipPlan,
       planStartDate: member.planStartDate ? dayjs(member.planStartDate) : null,
-      planExpiryDate: member.planExpiryDate ? dayjs(member.planExpiryDate) : null,
+      planExpiryDate: member.planExpiryDate
+        ? dayjs(member.planExpiryDate)
+        : null,
       status: member.status,
       emergencyContactName: member.emergencyContact?.name,
       emergencyContactPhone: member.emergencyContact?.phone,
@@ -228,33 +233,48 @@ const Members: React.FC = () => {
       const values = await form.validateFields();
       const formData = new FormData();
 
-      formData.append('membershipNumber', values.membershipNumber);
-      formData.append('name', values.name);
-      formData.append('phone', values.phone);
-      formData.append('email', values.email || '');
-      formData.append('address', values.address || '');
-      formData.append('dob', values.dob ? values.dob.format('YYYY-MM-DD') : '');
-      formData.append('gender', values.gender || '');
-      formData.append('bloodGroup', values.bloodGroup || '');
-      formData.append('shift', values.shift || '');
-      formData.append('membershipPlan', values.membershipPlan || '');
-      formData.append('planStartDate', values.planStartDate ? values.planStartDate.format('YYYY-MM-DD') : '');
-      formData.append('planExpiryDate', values.planExpiryDate ? values.planExpiryDate.format('YYYY-MM-DD') : '');
-      formData.append('status', values.status || 'active');
-      formData.append('emergencyContactName', values.emergencyContactName || '');
-      formData.append('emergencyContactPhone', values.emergencyContactPhone || '');
+      formData.append("membershipNumber", values.membershipNumber);
+      formData.append("name", values.name);
+      formData.append("phone", values.phone);
+      formData.append("email", values.email || "");
+      formData.append("address", values.address || "");
+      formData.append("dob", values.dob ? values.dob.format("YYYY-MM-DD") : "");
+      formData.append("gender", values.gender || "");
+      formData.append("bloodGroup", values.bloodGroup || "");
+      formData.append("shift", values.shift || "");
+      formData.append("membershipPlan", values.membershipPlan || "");
+      formData.append(
+        "planStartDate",
+        values.planStartDate ? values.planStartDate.format("YYYY-MM-DD") : "",
+      );
+      formData.append(
+        "planExpiryDate",
+        values.planExpiryDate ? values.planExpiryDate.format("YYYY-MM-DD") : "",
+      );
+      formData.append("status", values.status || "active");
+      formData.append(
+        "emergencyContactName",
+        values.emergencyContactName || "",
+      );
+      formData.append(
+        "emergencyContactPhone",
+        values.emergencyContactPhone || "",
+      );
 
       if (photoFile) {
-        formData.append('photo', photoFile);
+        formData.append("photo", photoFile);
       }
 
       if (editingMember) {
-        await updateMutation.mutateAsync({ id: editingMember._id, data: formData });
+        await updateMutation.mutateAsync({
+          id: editingMember._id,
+          data: formData,
+        });
       } else {
         await createMutation.mutateAsync(formData);
       }
     } catch (error) {
-      console.error('Form validation failed:', error);
+      console.error("Form validation failed:", error);
     }
   };
 
@@ -279,83 +299,87 @@ const Members: React.FC = () => {
 
   const columns = [
     {
-      title: 'Photo',
-      dataIndex: 'photo',
-      key: 'photo',
+      title: "Photo",
+      dataIndex: "photo",
+      key: "photo",
       render: (photo: string, record: Member) => (
         <Avatar
           src={photo}
           icon={<UserOutlined />}
           size={50}
-          style={{ backgroundColor: '#1890ff' }}
+          style={{ backgroundColor: "#1890ff" }}
         />
       ),
     },
     {
-      title: 'Membership #',
-      dataIndex: 'membershipNumber',
-      key: 'membershipNumber',
+      title: "Membership #",
+      dataIndex: "membershipNumber",
+      key: "membershipNumber",
       render: (text: string) => <span style={{ fontWeight: 600 }}>{text}</span>,
     },
     {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
       render: (text: string) => <span style={{ fontWeight: 500 }}>{text}</span>,
     },
     {
-      title: 'Phone',
-      dataIndex: 'phone',
-      key: 'phone',
+      title: "Phone",
+      dataIndex: "phone",
+      key: "phone",
     },
     {
-      title: 'Email',
-      dataIndex: 'email',
-      key: 'email',
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
     },
     {
-      title: 'Plan',
-      dataIndex: 'membershipPlan',
-      key: 'membershipPlan',
+      title: "Plan",
+      dataIndex: "membershipPlan",
+      key: "membershipPlan",
       render: (plan: MembershipPlan | string | null) => {
         if (!plan) return <Tag>No Plan</Tag>;
-        if (typeof plan === 'object') {
+        if (typeof plan === "object") {
           return <Tag color="blue">{plan.name}</Tag>;
         }
         return <Tag color="blue">{plan}</Tag>;
       },
     },
     {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
       render: (status: string) => {
         const colorMap: Record<string, string> = {
-          active: 'green',
-          expired: 'red',
-          frozen: 'orange',
+          active: "green",
+          expired: "red",
+          frozen: "orange",
         };
-        return <Tag color={colorMap[status] || 'default'}>{status.toUpperCase()}</Tag>;
+        return (
+          <Tag color={colorMap[status] || "default"}>
+            {status.toUpperCase()}
+          </Tag>
+        );
       },
     },
     {
-      title: 'Expiry Date',
-      dataIndex: 'planExpiryDate',
-      key: 'planExpiryDate',
+      title: "Expiry Date",
+      dataIndex: "planExpiryDate",
+      key: "planExpiryDate",
       render: (date: string) => {
-        if (!date) return '-';
+        if (!date) return "-";
         const expiry = dayjs(date);
-        const isExpired = expiry.isBefore(dayjs(), 'day');
+        const isExpired = expiry.isBefore(dayjs(), "day");
         return (
-          <span style={{ color: isExpired ? '#ff4d4f' : '#52c41a' }}>
-            {expiry.format('DD MMM YYYY')}
+          <span style={{ color: isExpired ? "#ff4d4f" : "#52c41a" }}>
+            {expiry.format("DD MMM YYYY")}
           </span>
         );
       },
     },
     {
-      title: 'Actions',
-      key: 'actions',
+      title: "Actions",
+      key: "actions",
       render: (_: unknown, record: Member) => (
         <Space>
           <Tooltip title="View">
@@ -392,11 +416,14 @@ const Members: React.FC = () => {
   ];
 
   const renderMemberCard = (member: Member) => {
-    const planName = member.membershipPlan && typeof member.membershipPlan === 'object'
-      ? member.membershipPlan.name
-      : member.membershipPlan || 'No Plan';
+    const planName =
+      member.membershipPlan && typeof member.membershipPlan === "object"
+        ? member.membershipPlan.name
+        : member.membershipPlan || "No Plan";
 
-    const isExpired = member.planExpiryDate && dayjs(member.planExpiryDate).isBefore(dayjs(), 'day');
+    const isExpired =
+      member.planExpiryDate &&
+      dayjs(member.planExpiryDate).isBefore(dayjs(), "day");
 
     return (
       <Card
@@ -404,20 +431,21 @@ const Members: React.FC = () => {
         hoverable
         style={{
           borderRadius: 12,
-          overflow: 'hidden',
-          height: '100%',
+          overflow: "hidden",
+          height: "100%",
         }}
         bodyStyle={{ padding: 0 }}
       >
         <div
           style={{
-            background: member.status === 'active'
-              ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-              : member.status === 'expired'
-              ? 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
-              : 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-            padding: '20px',
-            textAlign: 'center',
+            background:
+              member.status === "active"
+                ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+                : member.status === "expired"
+                  ? "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"
+                  : "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+            padding: "20px",
+            textAlign: "center",
           }}
         >
           <Avatar
@@ -425,67 +453,85 @@ const Members: React.FC = () => {
             icon={<UserOutlined />}
             size={80}
             style={{
-              border: '4px solid rgba(255,255,255,0.3)',
+              border: "4px solid rgba(255,255,255,0.3)",
               marginBottom: 10,
             }}
           />
-          <h3 style={{ color: '#fff', margin: 0, fontSize: 18 }}>
+          <h3 style={{ color: "#fff", margin: 0, fontSize: 18 }}>
             {member.name}
           </h3>
-          <p style={{ color: 'rgba(255,255,255,0.8)', margin: '5px 0 0' }}>
+          <p style={{ color: "rgba(255,255,255,0.8)", margin: "5px 0 0" }}>
             {member.membershipNumber}
           </p>
         </div>
         <div style={{ padding: 16 }}>
-          <Space direction="vertical" style={{ width: '100%' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <PhoneOutlined style={{ color: '#1890ff' }} />
+          <Space direction="vertical" style={{ width: "100%" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <PhoneOutlined style={{ color: "#1890ff" }} />
               <span>{member.phone}</span>
             </div>
             {member.email && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <MailOutlined style={{ color: '#1890ff' }} />
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <MailOutlined style={{ color: "#1890ff" }} />
                 <span>{member.email}</span>
               </div>
             )}
             {member.address && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <HomeOutlined style={{ color: '#1890ff' }} />
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <HomeOutlined style={{ color: "#1890ff" }} />
                 <span>{member.address}</span>
               </div>
             )}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <CalendarOutlined style={{ color: '#1890ff' }} />
-              <span>Expiry: {member.planExpiryDate ? dayjs(member.planExpiryDate).format('DD MMM YYYY') : '-'}</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <CalendarOutlined style={{ color: "#1890ff" }} />
+              <span>
+                Expiry:{" "}
+                {member.planExpiryDate
+                  ? dayjs(member.planExpiryDate).format("DD MMM YYYY")
+                  : "-"}
+              </span>
             </div>
             <div style={{ marginTop: 8 }}>
-              <Tag color={member.status === 'active' ? 'green' : member.status === 'expired' ? 'red' : 'orange'}>
+              <Tag
+                color={
+                  member.status === "active"
+                    ? "green"
+                    : member.status === "expired"
+                      ? "red"
+                      : "orange"
+                }
+              >
                 {planName}
               </Tag>
-              <Tag color={member.status === 'active' ? 'green' : member.status === 'expired' ? 'red' : 'orange'}>
+              <Tag
+                color={
+                  member.status === "active"
+                    ? "green"
+                    : member.status === "expired"
+                      ? "red"
+                      : "orange"
+                }
+              >
                 {member.status.toUpperCase()}
               </Tag>
             </div>
           </Space>
-          <div style={{ marginTop: 16, display: 'flex', gap: 8 }}>
+          <div style={{ marginTop: 16, display: "flex", gap: 8 }}>
             <Button
               type="primary"
               icon={<EyeOutlined />}
               size="small"
               onClick={() => handleView(member)}
-              style={{ flex: 1 }}
-            >
-              View
-            </Button>
+              shape="circle"
+            />
+
             {canEdit && (
               <Button
                 icon={<EditOutlined />}
                 size="small"
                 onClick={() => handleEdit(member)}
-                style={{ flex: 1 }}
-              >
-                Edit
-              </Button>
+                shape="circle"
+              />
             )}
             {canDelete && (
               <Popconfirm
@@ -494,9 +540,12 @@ const Members: React.FC = () => {
                 okText="Yes"
                 cancelText="No"
               >
-                <Button danger icon={<DeleteOutlined />} size="small" style={{ flex: 1 }}>
-                  Delete
-                </Button>
+                <Button
+                  danger
+                  icon={<DeleteOutlined />}
+                  size="small"
+                  shape="circle"
+                />
               </Popconfirm>
             )}
           </div>
@@ -527,26 +576,32 @@ const Members: React.FC = () => {
             <Button
               icon={<ReloadOutlined />}
               onClick={() => {
-                queryClient.invalidateQueries({ queryKey: ['members'] });
-                setSearch('');
+                queryClient.invalidateQueries({ queryKey: ["members"] });
+                setSearch("");
               }}
             >
               Refresh
             </Button>
             {canCreate && (
-              <Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={handleCreate}
+              >
                 Add Member
               </Button>
             )}
             <Button
-              onClick={() => setViewMode(viewMode === 'card' ? 'table' : 'card')}
+              onClick={() =>
+                setViewMode(viewMode === "card" ? "table" : "card")
+              }
             >
-              {viewMode === 'card' ? 'Table View' : 'Card View'}
+              {viewMode === "card" ? "Table View" : "Card View"}
             </Button>
           </Space>
         }
       >
-        {viewMode === 'table' ? (
+        {viewMode === "table" ? (
           <Table
             columns={columns}
             dataSource={membersData || []}
@@ -563,7 +618,7 @@ const Members: React.FC = () => {
           <Row gutter={[16, 16]}>
             {membersLoading ? (
               <Col span={24}>
-                <div style={{ textAlign: 'center', padding: 50 }}>
+                <div style={{ textAlign: "center", padding: 50 }}>
                   Loading members...
                 </div>
               </Col>
@@ -583,7 +638,7 @@ const Members: React.FC = () => {
       </Card>
 
       <Modal
-        title={editingMember ? 'Edit Member' : 'Add New Member'}
+        title={editingMember ? "Edit Member" : "Add New Member"}
         open={isModalVisible}
         onOk={handleSubmit}
         onCancel={() => {
@@ -591,12 +646,18 @@ const Members: React.FC = () => {
           setEditingMember(null);
           form.resetFields();
           setPhotoFile(null);
-          setPhotoPreview('');
+          setPhotoPreview("");
         }}
         width={800}
         centered
         confirmLoading={createMutation.isPending || updateMutation.isPending}
-        styles={{ body: { maxHeight: 'calc(100vh - 200px)', overflowY: 'auto', paddingRight: 8 } }}
+        styles={{
+          body: {
+            maxHeight: "calc(100vh - 200px)",
+            overflowY: "auto",
+            paddingRight: 8,
+          },
+        }}
       >
         <Form form={form} layout="vertical">
           <Row gutter={16}>
@@ -604,7 +665,9 @@ const Members: React.FC = () => {
               <Form.Item
                 name="membershipNumber"
                 label="Membership Number"
-                rules={[{ required: true, message: 'Please enter membership number' }]}
+                rules={[
+                  { required: true, message: "Please enter membership number" },
+                ]}
               >
                 <Input disabled />
               </Form.Item>
@@ -613,7 +676,7 @@ const Members: React.FC = () => {
               <Form.Item
                 name="name"
                 label="Name"
-                rules={[{ required: true, message: 'Please enter name' }]}
+                rules={[{ required: true, message: "Please enter name" }]}
               >
                 <Input placeholder="Enter full name" />
               </Form.Item>
@@ -624,7 +687,9 @@ const Members: React.FC = () => {
               <Form.Item
                 name="phone"
                 label="Phone"
-                rules={[{ required: true, message: 'Please enter phone number' }]}
+                rules={[
+                  { required: true, message: "Please enter phone number" },
+                ]}
               >
                 <Input placeholder="Enter phone number" />
               </Form.Item>
@@ -645,7 +710,7 @@ const Members: React.FC = () => {
           <Row gutter={16}>
             <Col span={8}>
               <Form.Item name="dob" label="Date of Birth">
-                <DatePicker style={{ width: '100%' }} />
+                <DatePicker style={{ width: "100%" }} />
               </Form.Item>
             </Col>
             <Col span={8}>
@@ -706,23 +771,29 @@ const Members: React.FC = () => {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item name="planStartDate" label="Plan Start Date">
-                <DatePicker style={{ width: '100%' }} />
+                <DatePicker style={{ width: "100%" }} />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item name="planExpiryDate" label="Plan Expiry Date">
-                <DatePicker style={{ width: '100%' }} disabled />
+                <DatePicker style={{ width: "100%" }} disabled />
               </Form.Item>
             </Col>
           </Row>
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item name="emergencyContactName" label="Emergency Contact Name">
+              <Form.Item
+                name="emergencyContactName"
+                label="Emergency Contact Name"
+              >
                 <Input placeholder="Enter emergency contact name" />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item name="emergencyContactPhone" label="Emergency Contact Phone">
+              <Form.Item
+                name="emergencyContactPhone"
+                label="Emergency Contact Phone"
+              >
                 <Input placeholder="Enter emergency contact phone" />
               </Form.Item>
             </Col>
@@ -737,7 +808,11 @@ const Members: React.FC = () => {
                   maxCount={1}
                 >
                   {photoPreview ? (
-                    <img src={photoPreview} alt="preview" style={{ width: '100%' }} />
+                    <img
+                      src={photoPreview}
+                      alt="preview"
+                      style={{ width: "100%" }}
+                    />
                   ) : (
                     uploadButton
                   )}
@@ -756,18 +831,20 @@ const Members: React.FC = () => {
           setSelectedMember(null);
         }}
         footer={null}
-        width={700}
+        width={1000}
         centered
-        styles={{ body: { maxHeight: 'calc(100vh - 200px)', overflowY: 'auto' } }}
+        styles={{
+          body: { maxHeight: "calc(100vh - 200px)", overflowY: "auto" },
+        }}
       >
         {selectedMember && (
           <div>
             <div
               style={{
-                textAlign: 'center',
+                textAlign: "center",
                 marginBottom: 24,
                 padding: 20,
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
                 borderRadius: 12,
               }}
             >
@@ -776,16 +853,24 @@ const Members: React.FC = () => {
                 icon={<UserOutlined />}
                 size={100}
                 style={{
-                  border: '4px solid rgba(255,255,255,0.3)',
+                  border: "4px solid rgba(255,255,255,0.3)",
                   marginBottom: 16,
                 }}
               />
-              <h2 style={{ color: '#fff', margin: 0 }}>{selectedMember.name}</h2>
-              <p style={{ color: 'rgba(255,255,255,0.8)', margin: '5px 0 0' }}>
+              <h2 style={{ color: "#fff", margin: 0 }}>
+                {selectedMember.name}
+              </h2>
+              <p style={{ color: "rgba(255,255,255,0.8)", margin: "5px 0 0" }}>
                 {selectedMember.membershipNumber}
               </p>
               <Tag
-                color={selectedMember.status === 'active' ? 'green' : selectedMember.status === 'expired' ? 'red' : 'orange'}
+                color={
+                  selectedMember.status === "active"
+                    ? "green"
+                    : selectedMember.status === "expired"
+                      ? "red"
+                      : "orange"
+                }
                 style={{ marginTop: 10 }}
               >
                 {selectedMember.status.toUpperCase()}
@@ -796,61 +881,82 @@ const Members: React.FC = () => {
                 <PhoneOutlined /> {selectedMember.phone}
               </Descriptions.Item>
               <Descriptions.Item label="Email">
-                <MailOutlined /> {selectedMember.email || '-'}
+                <MailOutlined /> {selectedMember.email || "-"}
               </Descriptions.Item>
               <Descriptions.Item label="Address" span={2}>
-                <HomeOutlined /> {selectedMember.address || '-'}
+                <HomeOutlined /> {selectedMember.address || "-"}
               </Descriptions.Item>
               <Descriptions.Item label="Date of Birth">
-                <CalendarOutlined /> {selectedMember.dob ? dayjs(selectedMember.dob).format('DD MMM YYYY') : '-'}
+                <CalendarOutlined />{" "}
+                {selectedMember.dob
+                  ? dayjs(selectedMember.dob).format("DD MMM YYYY")
+                  : "-"}
               </Descriptions.Item>
               <Descriptions.Item label="Gender">
-                {selectedMember.gender === 'male' ? (
-                  <><ManOutlined /> Male</>
-                ) : selectedMember.gender === 'female' ? (
-                  <><WomanOutlined /> Female</>
+                {selectedMember.gender === "male" ? (
+                  <>
+                    <ManOutlined /> Male
+                  </>
+                ) : selectedMember.gender === "female" ? (
+                  <>
+                    <WomanOutlined /> Female
+                  </>
                 ) : (
-                  selectedMember.gender || '-'
+                  selectedMember.gender || "-"
                 )}
               </Descriptions.Item>
               <Descriptions.Item label="Blood Group">
-                {selectedMember.bloodGroup || '-'}
+                {selectedMember.bloodGroup || "-"}
               </Descriptions.Item>
               <Descriptions.Item label="Shift">
-                {selectedMember.shift ? selectedMember.shift.charAt(0).toUpperCase() + selectedMember.shift.slice(1) : '-'}
+                {selectedMember.shift
+                  ? selectedMember.shift.charAt(0).toUpperCase() +
+                    selectedMember.shift.slice(1)
+                  : "-"}
               </Descriptions.Item>
               <Descriptions.Item label="Membership Plan">
-                {selectedMember.membershipPlan && typeof selectedMember.membershipPlan === 'object'
+                {selectedMember.membershipPlan &&
+                typeof selectedMember.membershipPlan === "object"
                   ? selectedMember.membershipPlan.name
-                  : selectedMember.membershipPlan || '-'}
+                  : selectedMember.membershipPlan || "-"}
               </Descriptions.Item>
               <Descriptions.Item label="Plan Price">
-                {selectedMember.membershipPlan && typeof selectedMember.membershipPlan === 'object'
+                {selectedMember.membershipPlan &&
+                typeof selectedMember.membershipPlan === "object"
                   ? `$${selectedMember.membershipPlan.price}`
-                  : '-'}
+                  : "-"}
               </Descriptions.Item>
               <Descriptions.Item label="Plan Start Date">
-                {selectedMember.planStartDate ? dayjs(selectedMember.planStartDate).format('DD MMM YYYY') : '-'}
+                {selectedMember.planStartDate
+                  ? dayjs(selectedMember.planStartDate).format("DD MMM YYYY")
+                  : "-"}
               </Descriptions.Item>
               <Descriptions.Item label="Plan Expiry Date">
                 <span
                   style={{
-                    color: selectedMember.planExpiryDate && dayjs(selectedMember.planExpiryDate).isBefore(dayjs(), 'day')
-                      ? '#ff4d4f'
-                      : '#52c41a',
+                    color:
+                      selectedMember.planExpiryDate &&
+                      dayjs(selectedMember.planExpiryDate).isBefore(
+                        dayjs(),
+                        "day",
+                      )
+                        ? "#ff4d4f"
+                        : "#52c41a",
                   }}
                 >
-                  {selectedMember.planExpiryDate ? dayjs(selectedMember.planExpiryDate).format('DD MMM YYYY') : '-'}
+                  {selectedMember.planExpiryDate
+                    ? dayjs(selectedMember.planExpiryDate).format("DD MMM YYYY")
+                    : "-"}
                 </span>
               </Descriptions.Item>
               <Descriptions.Item label="Emergency Contact Name">
-                {selectedMember.emergencyContact?.name || '-'}
+                {selectedMember.emergencyContact?.name || "-"}
               </Descriptions.Item>
               <Descriptions.Item label="Emergency Contact Phone">
-                {selectedMember.emergencyContact?.phone || '-'}
+                {selectedMember.emergencyContact?.phone || "-"}
               </Descriptions.Item>
               <Descriptions.Item label="Created At" span={2}>
-                {dayjs(selectedMember.createdAt).format('DD MMM YYYY HH:mm')}
+                {dayjs(selectedMember.createdAt).format("DD MMM YYYY HH:mm")}
               </Descriptions.Item>
             </Descriptions>
           </div>

@@ -25,6 +25,10 @@ const paymentSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    notes: {
+      type: String,
+      default: '',
+    },
     recordedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
