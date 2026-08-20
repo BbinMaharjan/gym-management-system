@@ -594,7 +594,9 @@ const Members: React.FC = () => {
           setPhotoPreview('');
         }}
         width={800}
+        centered
         confirmLoading={createMutation.isPending || updateMutation.isPending}
+        styles={{ body: { maxHeight: 'calc(100vh - 200px)', overflowY: 'auto', paddingRight: 8 } }}
       >
         <Form form={form} layout="vertical">
           <Row gutter={16}>
@@ -755,6 +757,8 @@ const Members: React.FC = () => {
         }}
         footer={null}
         width={700}
+        centered
+        styles={{ body: { maxHeight: 'calc(100vh - 200px)', overflowY: 'auto' } }}
       >
         {selectedMember && (
           <div>

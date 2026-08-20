@@ -197,6 +197,8 @@ export default function Users() {
         onCancel={handleCancel}
         confirmLoading={createMutation.isPending || updateMutation.isPending}
         width={600}
+        centered
+        styles={{ body: { maxHeight: 'calc(100vh - 200px)', overflowY: 'auto' } }}
       >
         <Form form={form} layout="vertical">
           <Form.Item

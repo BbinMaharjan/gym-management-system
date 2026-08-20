@@ -157,7 +157,9 @@ export default function Plans() {
         open={isModalOpen}
         onOk={handleSubmit}
         onCancel={handleCancel}
+        centered
         confirmLoading={createMutation.isPending || updateMutation.isPending}
+        styles={{ body: { maxHeight: 'calc(100vh - 200px)', overflowY: 'auto' } }}
       >
         <Form form={form} layout="vertical">
           <Form.Item

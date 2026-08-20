@@ -250,6 +250,8 @@ export default function EquipmentPage() {
         onCancel={handleCancel}
         confirmLoading={createMutation.isPending || updateMutation.isPending}
         width={600}
+        centered
+        styles={{ body: { maxHeight: 'calc(100vh - 200px)', overflowY: 'auto' } }}
       >
         <Form form={form} layout="vertical">
           <Form.Item
@@ -314,6 +316,8 @@ export default function EquipmentPage() {
           maintenanceForm.resetFields();
         }}
         confirmLoading={maintenanceMutation.isPending}
+        centered
+        styles={{ body: { maxHeight: 'calc(100vh - 200px)', overflowY: 'auto' } }}
       >
         <Form form={maintenanceForm} layout="vertical">
           <Form.Item

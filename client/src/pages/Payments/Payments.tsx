@@ -289,7 +289,9 @@ export default function Payments() {
           setEditingPayment(null);
           form.resetFields();
         }}
+        centered
         confirmLoading={createMutation.isPending || updateMutation.isPending}
+        styles={{ body: { maxHeight: 'calc(100vh - 200px)', overflowY: 'auto' } }}
       >
         <Form form={form} layout="vertical">
           {!editingPayment && (
