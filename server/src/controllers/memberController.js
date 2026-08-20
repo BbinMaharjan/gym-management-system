@@ -1,5 +1,22 @@
 const Member = require('../models/Member');
 
+exports.getNextMembershipNumber = async (req, res, next) => {
+  try {
+    const last = await Member.findOne({ membershipNumber: { $exists: true, $ne: '' } })
+      .sort({ createdAt: -1 })
+      .select('membershipNumber');
+    let nextNum = 1;
+    if (last && last.membershipNumber) {
+      const match = last.membershipNumber.match(/\d+$/);
+      if (match) nextNum = parseInt(match[0], 10) + 1;
+    }
+    const padded = String(nextNum).padStart(4, '0');
+    res.json({ membershipNumber: `GYM-${padded}` });
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.getMembers = async (req, res, next) => {
   try {
     const { search, status, plan } = req.query;
@@ -38,10 +55,11 @@ exports.getMember = async (req, res, next) => {
 
 exports.createMember = async (req, res, next) => {
   try {
-    const member = await Member.create({
-      ...req.body,
-      createdBy: req.user._id,
-    });
+    const data = { ...req.body, createdBy: req.user._id };
+    if (req.file) {
+      data.photo = `/uploads/members/${req.file.filename}`;
+    }
+    const member = await Member.create(data);
     res.status(201).json(member);
   } catch (err) {
     next(err);
@@ -50,7 +68,11 @@ exports.createMember = async (req, res, next) => {
 
 exports.updateMember = async (req, res, next) => {
   try {
-    const member = await Member.findByIdAndUpdate(req.params.id, req.body, {
+    const data = { ...req.body };
+    if (req.file) {
+      data.photo = `/uploads/members/${req.file.filename}`;
+    }
+    const member = await Member.findByIdAndUpdate(req.params.id, data, {
       new: true,
       runValidators: true,
     }).populate('membershipPlan', 'name durationInDays price');

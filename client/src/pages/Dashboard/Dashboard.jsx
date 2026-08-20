@@ -26,7 +26,7 @@ export default function Dashboard() {
     { title: 'Expiring This Week', value: data?.expiringThisWeek, icon: <WarningOutlined />, color: '#faad14' },
     { title: 'Total Equipment', value: data?.totalEquipment, icon: <ToolOutlined />, color: '#52c41a' },
     { title: 'Under Maintenance', value: data?.equipmentUnderMaintenance, icon: <ToolOutlined />, color: '#ff4d4f' },
-    { title: 'Monthly Revenue', value: data?.monthlyRevenue, icon: <DollarOutlined />, color: '#722ed1', prefix: '$' },
+    { title: 'Monthly Revenue', value: data?.monthlyRevenue, icon: <DollarOutlined />, color: '#722ed1', prefix: 'Rs' },
     { title: "Today's Attendance", value: data?.todayAttendance, icon: <CheckCircleOutlined />, color: '#13c2c2' },
   ];
 

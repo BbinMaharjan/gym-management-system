@@ -90,7 +90,7 @@ export default function EquipmentPage() {
       title: 'Cost',
       dataIndex: 'cost',
       key: 'cost',
-      render: (v) => (v ? `$${v.toLocaleString()}` : '-'),
+      render: (v) => (v ? `Rs${v.toLocaleString()}` : '-'),
     },
     {
       title: 'Status',
@@ -150,7 +150,7 @@ export default function EquipmentPage() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
         <h2 className="text-xl font-semibold">Equipment</h2>
         {canCreate && (
           <Button type="primary" icon={<PlusOutlined />} onClick={() => { setEditing(null); form.resetFields(); setModalOpen(true); }}>
@@ -158,13 +158,13 @@ export default function EquipmentPage() {
           </Button>
         )}
       </div>
-      <Space className="mb-4">
+      <div className="flex flex-col sm:flex-row gap-3 mb-4">
         <Input
           placeholder="Search"
           prefix={<SearchOutlined />}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="max-w-xs"
+          className="sm:max-w-xs"
           allowClear
         />
         <Select
@@ -172,7 +172,7 @@ export default function EquipmentPage() {
           value={statusFilter || undefined}
           onChange={(v) => setStatusFilter(v || '')}
           allowClear
-          className="w-48"
+          className="w-full sm:w-48"
           options={[
             { value: 'available', label: 'Available' },
             { value: 'in-use', label: 'In-Use' },
@@ -180,15 +180,15 @@ export default function EquipmentPage() {
             { value: 'retired', label: 'Retired' },
           ]}
         />
-      </Space>
-      <Table columns={columns} dataSource={items} rowKey="_id" loading={loading} pagination={{ pageSize: 10 }} />
+      </div>
+      <Table columns={columns} dataSource={items} rowKey="_id" loading={loading} pagination={{ pageSize: 10, showSizeChanger: false }} scroll={{ x: 800 }} />
 
       <Modal
         title={editing ? 'Edit Equipment' : 'Add Equipment'}
         open={modalOpen}
         onCancel={() => { setModalOpen(false); setEditing(null); form.resetFields(); }}
         onOk={() => form.submit()}
-        width={600}
+        width={Math.min(600, window.innerWidth - 32)}
       >
         <Form form={form} layout="vertical" onFinish={handleSave}>
           <Form.Item name="name" label="Name" rules={[{ required: true }]}>

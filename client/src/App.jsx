@@ -7,6 +7,8 @@ import DashboardLayout from './components/Layout';
 import Login from './pages/Login/Login';
 import Dashboard from './pages/Dashboard/Dashboard';
 import Members from './pages/Members/Members';
+import Payments from './pages/Payments/Payments';
+import Attendance from './pages/Attendance/Attendance';
 import Plans from './pages/Plans/Plans';
 import EquipmentPage from './pages/Equipment/Equipment';
 import Users from './pages/Users/Users';
@@ -38,6 +40,22 @@ export default function App() {
           element={
             <ProtectedRoute permission="members:view">
               <Members />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="payments"
+          element={
+            <ProtectedRoute permission="payments:view">
+              <Payments />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="attendance"
+          element={
+            <ProtectedRoute permission="attendance:view">
+              <Attendance />
             </ProtectedRoute>
           }
         />

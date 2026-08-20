@@ -79,6 +79,8 @@ export default function Users() {
       title: 'Permissions',
       dataIndex: 'permissions',
       key: 'permissions',
+      width: 250,
+      ellipsis: true,
       render: (p) => (
         <div className="flex flex-wrap gap-1">
           {p?.length > 0 ? p.map((perm) => <Tag key={perm}>{perm}</Tag>) : <span className="text-gray-400">All (SuperAdmin)</span>}
@@ -130,7 +132,7 @@ export default function Users() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
         <h2 className="text-xl font-semibold">Users</h2>
         <Button type="primary" icon={<PlusOutlined />} onClick={() => { setEditing(null); form.resetFields(); setModalOpen(true); }}>
           Add User
@@ -141,16 +143,16 @@ export default function Users() {
         prefix={<SearchOutlined />}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="mb-4 max-w-md"
+        className="mb-4 sm:max-w-md"
         allowClear
       />
-      <Table columns={columns} dataSource={users} rowKey="_id" loading={loading} pagination={{ pageSize: 10 }} />
+      <Table columns={columns} dataSource={users} rowKey="_id" loading={loading} pagination={{ pageSize: 10, showSizeChanger: false }} scroll={{ x: 900 }} />
       <Modal
         title={editing ? 'Edit User' : 'Add User'}
         open={modalOpen}
         onCancel={() => { setModalOpen(false); setEditing(null); form.resetFields(); }}
         onOk={() => form.submit()}
-        width={600}
+        width={Math.min(600, window.innerWidth - 32)}
       >
         <Form form={form} layout="vertical" onFinish={handleSave}>
           <Form.Item name="name" label="Name" rules={[{ required: true }]}>

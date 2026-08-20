@@ -61,3 +61,32 @@ exports.getAllAttendance = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.getTodayCheckedIn = async (req, res, next) => {
+  try {
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const todayEnd = new Date();
+    todayEnd.setHours(23, 59, 59, 999);
+
+    const records = await Attendance.find({
+      checkInTime: { $gte: todayStart, $lte: todayEnd },
+      checkOutTime: null,
+    })
+      .populate('member', 'name phone photo shift')
+      .sort({ checkInTime: -1 });
+    res.json(records);
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.deleteAttendance = async (req, res, next) => {
+  try {
+    const record = await Attendance.findByIdAndDelete(req.params.id);
+    if (!record) return res.status(404).json({ error: 'Record not found' });
+    res.json({ message: 'Attendance record deleted' });
+  } catch (err) {
+    next(err);
+  }
+};

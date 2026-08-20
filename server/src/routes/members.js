@@ -4,13 +4,15 @@ const ctrl = require('../controllers/memberController');
 const paymentCtrl = require('../controllers/paymentController');
 const attendanceCtrl = require('../controllers/attendanceController');
 const { verifyToken, checkPermission } = require('../middleware/auth');
+const upload = require('../middleware/upload');
 
 router.use(verifyToken);
 
+router.get('/next-number', checkPermission('members:create'), ctrl.getNextMembershipNumber);
 router.get('/', checkPermission('members:view'), ctrl.getMembers);
 router.get('/:id', checkPermission('members:view'), ctrl.getMember);
-router.post('/', checkPermission('members:create'), ctrl.createMember);
-router.put('/:id', checkPermission('members:edit'), ctrl.updateMember);
+router.post('/', checkPermission('members:create'), upload.single('photo'), ctrl.createMember);
+router.put('/:id', checkPermission('members:edit'), upload.single('photo'), ctrl.updateMember);
 router.delete('/:id', checkPermission('members:delete'), ctrl.deleteMember);
 router.put('/:id/assign-plan', checkPermission('members:edit'), ctrl.assignPlan);
 

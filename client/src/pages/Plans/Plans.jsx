@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Table, Button, Modal, Form, Input, InputNumber, message, Popconfirm, Switch } from 'antd';
+import { Table, Button, Modal, Form, Input, InputNumber, Space, message, Popconfirm, Switch } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { plansAPI } from '../../api/api';
 import { usePermission } from '../../hooks/useAuth';
@@ -54,8 +54,8 @@ export default function Plans() {
   const columns = [
     { title: 'Name', dataIndex: 'name', key: 'name' },
     { title: 'Duration (Days)', dataIndex: 'durationInDays', key: 'durationInDays' },
-    { title: 'Price', dataIndex: 'price', key: 'price', render: (v) => `$${v}` },
-    { title: 'Description', dataIndex: 'description', key: 'description' },
+    { title: 'Price', dataIndex: 'price', key: 'price', render: (v) => `Rs${v}` },
+    { title: 'Description', dataIndex: 'description', key: 'description', ellipsis: true },
     {
       title: 'Active',
       dataIndex: 'isActive',
@@ -68,7 +68,7 @@ export default function Plans() {
             title: 'Actions',
             key: 'actions',
             render: (_, record) => (
-              <div className="space-x-2">
+              <Space>
                 <Button
                   size="small"
                   onClick={() => {
@@ -82,7 +82,7 @@ export default function Plans() {
                 <Popconfirm title="Delete plan?" onConfirm={() => handleDelete(record._id)}>
                   <Button size="small" danger>Delete</Button>
                 </Popconfirm>
-              </div>
+              </Space>
             ),
           },
         ]
@@ -91,7 +91,7 @@ export default function Plans() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
         <h2 className="text-xl font-semibold">Membership Plans</h2>
         {canManage && (
           <Button type="primary" icon={<PlusOutlined />} onClick={() => { setEditing(null); form.resetFields(); setModalOpen(true); }}>
@@ -99,7 +99,7 @@ export default function Plans() {
           </Button>
         )}
       </div>
-      <Table columns={columns} dataSource={plans} rowKey="_id" loading={loading} pagination={false} />
+      <Table columns={columns} dataSource={plans} rowKey="_id" loading={loading} pagination={false} scroll={{ x: 600 }} />
       <Modal
         title={editing ? 'Edit Plan' : 'Add Plan'}
         open={modalOpen}

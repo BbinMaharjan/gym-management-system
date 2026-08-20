@@ -16,6 +16,7 @@ export const usersAPI = {
 export const membersAPI = {
   getAll: (params) => api.get('/members', { params }),
   getOne: (id) => api.get(`/members/${id}`),
+  getNextNumber: () => api.get('/members/next-number'),
   create: (data) => api.post('/members', data),
   update: (id, data) => api.put(`/members/${id}`, data),
   delete: (id) => api.delete(`/members/${id}`),
@@ -48,5 +49,9 @@ export const equipmentAPI = {
 export const dashboardAPI = {
   getSummary: () => api.get('/dashboard/summary'),
   getAttendance: (params) => api.get('/dashboard/attendance', { params }),
+  getTodayCheckedIn: () => api.get('/dashboard/attendance/today'),
+  deleteAttendance: (id) => api.delete(`/dashboard/attendance/${id}`),
   getPayments: (params) => api.get('/dashboard/payments', { params }),
+  updatePayment: (id, data) => api.put(`/dashboard/payments/${id}`, data),
+  deletePayment: (id) => api.delete(`/dashboard/payments/${id}`),
 };
