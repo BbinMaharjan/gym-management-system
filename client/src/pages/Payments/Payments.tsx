@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState, useMemo } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Table,
   Button,
@@ -14,38 +14,44 @@ import {
   Popconfirm,
   message,
   Card,
-} from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons';
-import dayjs from 'dayjs';
-import type { Dayjs } from 'dayjs';
-import { dashboardAPI, membersAPI, plansAPI } from '../../api/api';
-import type { Payment } from '../../types';
-import { usePermission } from '../../hooks/useAuth';
+} from "antd";
+import {
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
+import dayjs from "dayjs";
+import type { Dayjs } from "dayjs";
+import { dashboardAPI, membersAPI, plansAPI } from "../../api/api";
+import type { Payment } from "../../types";
+import { usePermission } from "../../hooks/useAuth";
 
 const { RangePicker } = DatePicker;
 
 const methodColors: Record<string, string> = {
-  cash: 'green',
-  card: 'blue',
-  upi: 'purple',
-  bank_transfer: 'orange',
-  other: 'default',
+  cash: "green",
+  card: "blue",
+  bank_transfer: "orange",
+  other: "default",
 };
 
 export default function Payments() {
-  const [searchText, setSearchText] = useState('');
-  const [dateRange, setDateRange] = useState<[Dayjs | null, Dayjs | null] | null>(null);
+  const [searchText, setSearchText] = useState("");
+  const [dateRange, setDateRange] = useState<
+    [Dayjs | null, Dayjs | null] | null
+  >(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPayment, setEditingPayment] = useState<Payment | null>(null);
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
-  const canManage = usePermission('payments:manage');
+  const canManage = usePermission("payments:manage");
 
-  const from = dateRange?.[0]?.format('YYYY-MM-DD') ?? undefined;
-  const to = dateRange?.[1]?.format('YYYY-MM-DD') ?? undefined;
+  const from = dateRange?.[0]?.format("YYYY-MM-DD") ?? undefined;
+  const to = dateRange?.[1]?.format("YYYY-MM-DD") ?? undefined;
 
   const { data: payments = [], isLoading } = useQuery({
-    queryKey: ['payments', { from, to }],
+    queryKey: ["payments", { from, to }],
     queryFn: async () => {
       const params: Record<string, unknown> = {};
       if (from) params.from = from;
@@ -56,7 +62,7 @@ export default function Payments() {
   });
 
   const { data: members = [] } = useQuery({
-    queryKey: ['members-list'],
+    queryKey: ["members-list"],
     queryFn: async () => {
       const res = await membersAPI.getAll();
       return res.data;
@@ -64,7 +70,7 @@ export default function Payments() {
   });
 
   const { data: plans = [] } = useQuery({
-    queryKey: ['plans'],
+    queryKey: ["plans"],
     queryFn: async () => {
       const res = await plansAPI.getAll();
       return res.data;
@@ -79,30 +85,36 @@ export default function Payments() {
       return res.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['payments'] });
-      message.success('Payment created successfully');
+      queryClient.invalidateQueries({ queryKey: ["payments"] });
+      message.success("Payment created successfully");
       setIsModalOpen(false);
       form.resetFields();
     },
     onError: () => {
-      message.error('Failed to create payment');
+      message.error("Failed to create payment");
     },
   });
 
   const updateMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: Partial<Payment> }) => {
+    mutationFn: async ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: Partial<Payment>;
+    }) => {
       const res = await dashboardAPI.updatePayment(id, data);
       return res.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['payments'] });
-      message.success('Payment updated successfully');
+      queryClient.invalidateQueries({ queryKey: ["payments"] });
+      message.success("Payment updated successfully");
       setIsModalOpen(false);
       setEditingPayment(null);
       form.resetFields();
     },
     onError: () => {
-      message.error('Failed to update payment');
+      message.error("Failed to update payment");
     },
   });
 
@@ -111,11 +123,11 @@ export default function Payments() {
       await dashboardAPI.deletePayment(id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['payments'] });
-      message.success('Payment deleted successfully');
+      queryClient.invalidateQueries({ queryKey: ["payments"] });
+      message.success("Payment deleted successfully");
     },
     onError: () => {
-      message.error('Failed to delete payment');
+      message.error("Failed to delete payment");
     },
   });
 
@@ -158,7 +170,10 @@ export default function Payments() {
       };
 
       if (editingPayment) {
-        updateMutation.mutate({ id: editingPayment._id, data: payload as Partial<Payment> });
+        updateMutation.mutate({
+          id: editingPayment._id,
+          data: payload as Partial<Payment>,
+        });
       } else {
         createMutation.mutate(payload);
       }
@@ -167,42 +182,47 @@ export default function Payments() {
 
   const columns = [
     {
-      title: 'Member',
-      key: 'member',
-      render: (_: unknown, record: Payment) => record.member?.name ?? 'N/A',
+      title: "Member",
+      key: "member",
+      render: (_: unknown, record: Payment) => record.member?.name ?? "N/A",
     },
     {
-      title: 'Amount',
-      key: 'amount',
+      title: "Amount",
+      key: "amount",
       render: (_: unknown, record: Payment) => `Rs ${record.amount}`,
     },
     {
-      title: 'Method',
-      key: 'method',
+      title: "Method",
+      key: "method",
       render: (_: unknown, record: Payment) => (
-        <Tag color={methodColors[record.method] ?? 'default'}>
-          {record.method.replace('_', ' ').toUpperCase()}
+        <Tag color={methodColors[record.method] ?? "default"}>
+          {record.method.replace("_", " ").toUpperCase()}
         </Tag>
       ),
     },
     {
-      title: 'Plan',
-      key: 'plan',
-      render: (_: unknown, record: Payment) => record.plan?.name ?? 'N/A',
+      title: "Plan",
+      key: "plan",
+      render: (_: unknown, record: Payment) => record.plan?.name ?? "N/A",
     },
     {
-      title: 'Paid On',
-      key: 'paidOn',
-      render: (_: unknown, record: Payment) => dayjs(record.paidOn).format('DD MMM YYYY'),
+      title: "Paid On",
+      key: "paidOn",
+      render: (_: unknown, record: Payment) =>
+        dayjs(record.paidOn).format("DD MMM YYYY"),
     },
     ...(canManage
       ? [
           {
-            title: 'Actions',
-            key: 'actions',
+            title: "Actions",
+            key: "actions",
             render: (_: unknown, record: Payment) => (
               <Space>
-                <Button type="link" icon={<EditOutlined />} onClick={() => openEditModal(record)}>
+                <Button
+                  type="link"
+                  icon={<EditOutlined />}
+                  onClick={() => openEditModal(record)}
+                >
                   Edit
                 </Button>
                 <Popconfirm
@@ -245,7 +265,9 @@ export default function Payments() {
           />
           <RangePicker
             value={dateRange}
-            onChange={(dates) => setDateRange(dates as [Dayjs | null, Dayjs | null] | null)}
+            onChange={(dates) =>
+              setDateRange(dates as [Dayjs | null, Dayjs | null] | null)
+            }
           />
         </div>
 
@@ -259,7 +281,7 @@ export default function Payments() {
       </Card>
 
       <Modal
-        title={editingPayment ? 'Edit Payment' : 'Add Payment'}
+        title={editingPayment ? "Edit Payment" : "Add Payment"}
         open={isModalOpen}
         onOk={handleModalOk}
         onCancel={() => {
@@ -274,7 +296,7 @@ export default function Payments() {
             <Form.Item
               name="memberId"
               label="Member"
-              rules={[{ required: true, message: 'Please select a member' }]}
+              rules={[{ required: true, message: "Please select a member" }]}
             >
               <Select
                 placeholder="Select member"
@@ -288,7 +310,7 @@ export default function Payments() {
           <Form.Item
             name="amount"
             label="Amount"
-            rules={[{ required: true, message: 'Please enter amount' }]}
+            rules={[{ required: true, message: "Please enter amount" }]}
           >
             <InputNumber min={0} className="w-full" prefix="Rs" />
           </Form.Item>
@@ -296,16 +318,17 @@ export default function Payments() {
           <Form.Item
             name="method"
             label="Payment Method"
-            rules={[{ required: true, message: 'Please select payment method' }]}
+            rules={[
+              { required: true, message: "Please select payment method" },
+            ]}
           >
             <Select
               placeholder="Select method"
               options={[
-                { value: 'cash', label: 'Cash' },
-                { value: 'card', label: 'Card' },
-                { value: 'upi', label: 'UPI' },
-                { value: 'bank_transfer', label: 'Bank Transfer' },
-                { value: 'other', label: 'Other' },
+                { value: "cash", label: "Cash" },
+                { value: "card", label: "Card" },
+                { value: "bank_transfer", label: "Bank Transfer" },
+                { value: "other", label: "Other" },
               ]}
             />
           </Form.Item>
@@ -313,7 +336,7 @@ export default function Payments() {
           <Form.Item
             name="planId"
             label="Plan"
-            rules={[{ required: true, message: 'Please select a plan' }]}
+            rules={[{ required: true, message: "Please select a plan" }]}
           >
             <Select
               placeholder="Select plan"
@@ -326,7 +349,7 @@ export default function Payments() {
           <Form.Item
             name="paidOn"
             label="Paid On"
-            rules={[{ required: true, message: 'Please select date' }]}
+            rules={[{ required: true, message: "Please select date" }]}
           >
             <DatePicker className="w-full" />
           </Form.Item>

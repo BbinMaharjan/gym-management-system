@@ -1,10 +1,10 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const paymentSchema = new mongoose.Schema(
   {
     member: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Member',
+      ref: "Member",
       required: true,
     },
     amount: {
@@ -14,12 +14,12 @@ const paymentSchema = new mongoose.Schema(
     },
     method: {
       type: String,
-      enum: ['cash', 'card', 'upi', 'bank_transfer', 'other'],
+      enum: ["cash", "card", "bank_transfer", "other"],
       required: true,
     },
     plan: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'MembershipPlan',
+      ref: "MembershipPlan",
     },
     paidOn: {
       type: Date,
@@ -27,10 +27,10 @@ const paymentSchema = new mongoose.Schema(
     },
     recordedBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: "User",
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-module.exports = mongoose.model('Payment', paymentSchema);
+module.exports = mongoose.model("Payment", paymentSchema);

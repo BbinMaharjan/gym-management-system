@@ -2,7 +2,7 @@ export interface User {
   _id: string;
   name: string;
   email: string;
-  role: 'superadmin' | 'admin' | 'staff';
+  role: "superadmin" | "admin" | "staff";
   permissions: string[];
   isActive: boolean;
 }
@@ -36,7 +36,7 @@ export interface Member {
   membershipPlan: MembershipPlan | string | null;
   planStartDate: string;
   planExpiryDate: string;
-  status: 'active' | 'expired' | 'frozen';
+  status: "active" | "expired" | "frozen";
   emergencyContact?: { name: string; phone: string };
   createdAt: string;
 }
@@ -47,7 +47,7 @@ export interface Equipment {
   category: string;
   brand: string;
   cost: number;
-  status: 'available' | 'in-use' | 'maintenance' | 'retired';
+  status: "available" | "in-use" | "maintenance" | "retired";
   purchaseDate: string;
   nextServiceDue: string;
   notes: string;
@@ -58,7 +58,7 @@ export interface Payment {
   _id: string;
   member: Member | null;
   amount: number;
-  method: 'cash' | 'card' | 'upi' | 'bank_transfer' | 'other';
+  method: "cash" | "card" | "bank_transfer" | "other";
   plan: MembershipPlan | null;
   paidOn: string;
   notes: string;

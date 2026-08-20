@@ -1,8 +1,8 @@
-const Member = require('../models/Member');
-const Payment = require('../models/Payment');
-const Equipment = require('../models/Equipment');
-const Attendance = require('../models/Attendance');
-const dayjs = require('dayjs');
+const Member = require("../models/Member");
+const Payment = require("../models/Payment");
+const Equipment = require("../models/Equipment");
+const Attendance = require("../models/Attendance");
+const dayjs = require("dayjs");
 
 exports.getSummary = async (req, res, next) => {
   try {
@@ -20,16 +20,16 @@ exports.getSummary = async (req, res, next) => {
       recentAttendance,
       totalMembers,
     ] = await Promise.all([
-      Member.countDocuments({ status: 'active' }),
+      Member.countDocuments({ status: "active" }),
       Member.countDocuments({
-        status: 'active',
+        status: "active",
         planExpiryDate: { $gte: now, $lte: weekEnd },
       }),
       Equipment.countDocuments(),
-      Equipment.countDocuments({ status: 'maintenance' }),
+      Equipment.countDocuments({ status: "maintenance" }),
       Payment.aggregate([
         { $match: { paidOn: { $gte: monthStart } } },
-        { $group: { _id: null, total: { $sum: '$amount' } } },
+        { $group: { _id: null, total: { $sum: "$amount" } } },
       ]),
       Attendance.countDocuments({
         checkInTime: { $gte: new Date(now.setHours(0, 0, 0, 0)) },
@@ -55,19 +55,23 @@ exports.getRevenueTrend = async (req, res, next) => {
   try {
     const months = [];
     for (let i = 5; i >= 0; i--) {
-      const start = dayjs().subtract(i, 'month').startOf('month').toDate();
-      const end = dayjs().subtract(i, 'month').endOf('month').toDate();
-      months.push({ start, end, label: dayjs().subtract(i, 'month').format('MMM YYYY') });
+      const start = dayjs().subtract(i, "month").startOf("month").toDate();
+      const end = dayjs().subtract(i, "month").endOf("month").toDate();
+      months.push({
+        start,
+        end,
+        label: dayjs().subtract(i, "month").format("MMM YYYY"),
+      });
     }
 
     const results = await Promise.all(
       months.map(async (m) => {
         const agg = await Payment.aggregate([
           { $match: { paidOn: { $gte: m.start, $lte: m.end } } },
-          { $group: { _id: null, total: { $sum: '$amount' } } },
+          { $group: { _id: null, total: { $sum: "$amount" } } },
         ]);
         return { month: m.label, revenue: agg.length > 0 ? agg[0].total : 0 };
-      })
+      }),
     );
 
     res.json(results);
@@ -80,10 +84,10 @@ exports.getAttendanceTrend = async (req, res, next) => {
   try {
     const days = [];
     for (let i = 6; i >= 0; i--) {
-      const date = dayjs().subtract(i, 'day');
-      const start = date.startOf('day').toDate();
-      const end = date.endOf('day').toDate();
-      days.push({ start, end, label: date.format('ddd') });
+      const date = dayjs().subtract(i, "day");
+      const start = date.startOf("day").toDate();
+      const end = date.endOf("day").toDate();
+      days.push({ start, end, label: date.format("ddd") });
     }
 
     const results = await Promise.all(
@@ -92,7 +96,7 @@ exports.getAttendanceTrend = async (req, res, next) => {
           checkInTime: { $gte: d.start, $lte: d.end },
         });
         return { day: d.label, attendance: count };
-      })
+      }),
     );
 
     res.json(results);
@@ -105,9 +109,13 @@ exports.getMemberGrowth = async (req, res, next) => {
   try {
     const months = [];
     for (let i = 5; i >= 0; i--) {
-      const start = dayjs().subtract(i, 'month').startOf('month').toDate();
-      const end = dayjs().subtract(i, 'month').endOf('month').toDate();
-      months.push({ start, end, label: dayjs().subtract(i, 'month').format('MMM') });
+      const start = dayjs().subtract(i, "month").startOf("month").toDate();
+      const end = dayjs().subtract(i, "month").endOf("month").toDate();
+      months.push({
+        start,
+        end,
+        label: dayjs().subtract(i, "month").format("MMM"),
+      });
     }
 
     const results = await Promise.all(
@@ -116,7 +124,7 @@ exports.getMemberGrowth = async (req, res, next) => {
           createdAt: { $gte: m.start, $lte: m.end },
         });
         return { month: m.label, members: count };
-      })
+      }),
     );
 
     res.json(results);
@@ -133,10 +141,21 @@ exports.getPaymentMethods = async (req, res, next) => {
 
     const results = await Payment.aggregate([
       { $match: { paidOn: { $gte: monthStart } } },
-      { $group: { _id: '$method', count: { $sum: 1 }, total: { $sum: '$amount' } } },
+      {
+        $group: {
+          _id: "$method",
+          count: { $sum: 1 },
+          total: { $sum: "$amount" },
+        },
+      },
     ]);
 
-    const methodLabels = { cash: 'Cash', card: 'Card', upi: 'UPI', bank_transfer: 'Bank Transfer', other: 'Other' };
+    const methodLabels = {
+      cash: "Cash",
+      card: "Card",
+      bank_transfer: "Bank Transfer",
+      other: "Other",
+    };
     const formatted = results.map((r) => ({
       method: methodLabels[r._id] || r._id,
       count: r.count,
@@ -160,18 +179,18 @@ exports.getShiftDistribution = async (req, res, next) => {
       { $match: { checkInTime: { $gte: todayStart, $lte: todayEnd } } },
       {
         $lookup: {
-          from: 'members',
-          localField: 'member',
-          foreignField: '_id',
-          as: 'memberData',
+          from: "members",
+          localField: "member",
+          foreignField: "_id",
+          as: "memberData",
         },
       },
-      { $unwind: '$memberData' },
-      { $group: { _id: '$memberData.shift', count: { $sum: 1 } } },
+      { $unwind: "$memberData" },
+      { $group: { _id: "$memberData.shift", count: { $sum: 1 } } },
     ]);
 
     const formatted = results.map((r) => ({
-      shift: r._id ? r._id.charAt(0).toUpperCase() + r._id.slice(1) : 'Unknown',
+      shift: r._id ? r._id.charAt(0).toUpperCase() + r._id.slice(1) : "Unknown",
       count: r.count,
     }));
 
