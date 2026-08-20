@@ -48,6 +48,11 @@ export const equipmentAPI = {
 
 export const dashboardAPI = {
   getSummary: () => api.get('/dashboard/summary'),
+  getRevenueTrend: () => api.get('/dashboard/revenue-trend'),
+  getAttendanceTrend: () => api.get('/dashboard/attendance-trend'),
+  getMemberGrowth: () => api.get('/dashboard/member-growth'),
+  getPaymentMethods: () => api.get('/dashboard/payment-methods'),
+  getShiftDistribution: () => api.get('/dashboard/shift-distribution'),
   getAttendance: (params) => api.get('/dashboard/attendance', { params }),
   getTodayCheckedIn: () => api.get('/dashboard/attendance/today'),
   deleteAttendance: (id) => api.delete(`/dashboard/attendance/${id}`),
