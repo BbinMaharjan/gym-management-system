@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { fetchMe } from './store/authSlice';
+import type { AppDispatch } from './store';
 import ProtectedRoute from './components/ProtectedRoute';
 import DashboardLayout from './components/Layout';
 import Login from './pages/Login/Login';
@@ -14,7 +15,7 @@ import EquipmentPage from './pages/Equipment/Equipment';
 import Users from './pages/Users/Users';
 
 export default function App() {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
     const token = localStorage.getItem('token');

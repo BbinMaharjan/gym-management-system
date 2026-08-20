@@ -44,44 +44,14 @@ export default function DashboardLayout() {
   }, [location.pathname]);
 
   const menuItems = [
-    {
-      key: '/',
-      icon: <DashboardOutlined />,
-      label: 'Dashboard',
-    },
-    {
-      key: '/members',
-      icon: <TeamOutlined />,
-      label: 'Members',
-    },
-    {
-      key: '/payments',
-      icon: <MoneyCollectOutlined />,
-      label: 'Payments',
-    },
-    {
-      key: '/attendance',
-      icon: <CheckCircleOutlined />,
-      label: 'Attendance',
-    },
-    {
-      key: '/plans',
-      icon: <CreditCardOutlined />,
-      label: 'Plans',
-    },
-    {
-      key: '/equipment',
-      icon: <ToolOutlined />,
-      label: 'Equipment',
-    },
+    { key: '/', icon: <DashboardOutlined />, label: 'Dashboard' },
+    { key: '/members', icon: <TeamOutlined />, label: 'Members' },
+    { key: '/payments', icon: <MoneyCollectOutlined />, label: 'Payments' },
+    { key: '/attendance', icon: <CheckCircleOutlined />, label: 'Attendance' },
+    { key: '/plans', icon: <CreditCardOutlined />, label: 'Plans' },
+    { key: '/equipment', icon: <ToolOutlined />, label: 'Equipment' },
     ...(user?.role === 'superadmin'
-      ? [
-          {
-            key: '/users',
-            icon: <UserOutlined />,
-            label: 'Users',
-          },
-        ]
+      ? [{ key: '/users', icon: <UserOutlined />, label: 'Users' }]
       : []),
   ];
 
@@ -139,7 +109,7 @@ export default function DashboardLayout() {
           </div>
         </Header>
         <Content
-          className={`m-2 sm:m-6 p-4 sm:p-6 flex-1`}
+          className="m-2 sm:m-6 p-4 sm:p-6 flex-1"
           style={{ background: colorBgContainer, borderRadius: borderRadiusLG, minHeight: 280, overflow: 'auto' }}
         >
           <Outlet />

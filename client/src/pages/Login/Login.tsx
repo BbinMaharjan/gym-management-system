@@ -1,19 +1,19 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, Card, Alert } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { login, clearError } from '../../store/authSlice';
+import type { AppDispatch, RootState } from '../../store';
 
 export default function Login() {
   const [form] = Form.useForm();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const { loading, error } = useSelector((state) => state.auth);
+  const { loading, error } = useSelector((state: RootState) => state.auth);
 
-  const onFinish = async (values) => {
+  const onFinish = async (values: { email: string; password: string }) => {
     const result = await dispatch(login(values));
-    if (!result.error) {
+    if (!('error' in result)) {
       navigate('/');
     }
   };
