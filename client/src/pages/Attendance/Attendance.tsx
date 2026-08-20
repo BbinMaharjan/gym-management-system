@@ -9,7 +9,7 @@ import { usePermission } from '../../hooks/useAuth';
 
 export default function Attendance() {
   const queryClient = useQueryClient();
-  const canManage = usePermission('attendance.manage');
+  const canManage = usePermission('attendance:manage');
   const [searchText, setSearchText] = useState('');
   const [historyDate, setHistoryDate] = useState<dayjs.Dayjs | null>(null);
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);

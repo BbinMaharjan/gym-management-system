@@ -59,9 +59,9 @@ const Members: React.FC = () => {
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string>('');
   const queryClient = useQueryClient();
-  const canEdit = usePermission('member:edit');
-  const canDelete = usePermission('member:delete');
-  const canCreate = usePermission('member:create');
+  const canEdit = usePermission('members:edit');
+  const canDelete = usePermission('members:delete');
+  const canCreate = usePermission('members:create');
 
   const watchPlan = Form.useWatch('membershipPlan', form);
   const watchStartDate = Form.useWatch('planStartDate', form);
